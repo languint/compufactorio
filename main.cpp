@@ -22,7 +22,7 @@ int main() {
     const std::string code = R"(
         const memset<int> a = 3;
         input<int, WireColor::Green> b;
-        output<int, WireColor::Red>(b);
+        output<int, WireColor::Red>(a * b);
     )";
 
     const std::vector<std::string> tokens = tokenize(code);

@@ -74,10 +74,27 @@ private:
         match(">");
         std::string name = tokens[pos++];
         match("=");
-        int value = std::stoi(tokens[pos++]);
+
+        // Check if the token is a literal number
+        if (pos < tokens.size() && std::isdigit(tokens[pos][0])) {
+            int value = std::stoi(tokens[pos++]);
+            match(";");
+            return std::make_unique<MemsetNode>(type, name, value, is_const);
+        }
+        // Combine tokens until the semicolon to get the expression
+        std::string expr;
+        while (pos < tokens.size() && tokens[pos] != ";") {
+            expr += tokens[pos++] + " ";
+        }
+        if (!expr.empty() && expr.back() == ' ')
+            expr.pop_back();
         match(";");
-        return std::make_unique<MemsetNode>(type, name, value, is_const);
+        // For now, print an error and default the value to 0
+        std::cerr << "Error: Non-literal expression '" << expr
+                << "' in memset initialization is not supported.\n";
+        return std::make_unique<MemsetNode>(type, name, 0, is_const);
     }
+
 
     std::unique_ptr<FunctionNode> parseFunction() {
         std::string name = tokens[pos++];

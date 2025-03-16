@@ -21,7 +21,7 @@ public:
     int value;
     bool is_const;
 
-    MemsetNode(std::string type_, std::string name_, int value_, bool is_const_)
+    MemsetNode(std::string type_, std::string name_, const int value_, const bool is_const_)
         : type(std::move(type_)), name(std::move(name_)), value(value_), is_const(is_const_) {
     }
 
@@ -132,7 +132,7 @@ public:
 };
 
 inline std::vector<std::string> tokenize(const std::string &code) {
-    const std::regex re(R"((\+=|-=|\*=|/=)|[A-Za-z0-9_:+]+|[{}(),;<>+\-=])");
+    const std::regex re(R"((\+=|-=|\*=|/=)|[A-Za-z0-9_:+]+|[{}(),;<>+\-\*=])");
     const std::sregex_iterator begin(code.begin(), code.end(), re);
     const std::sregex_iterator end;
     std::vector<std::string> tokens;
