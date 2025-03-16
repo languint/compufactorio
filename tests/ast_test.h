@@ -1,5 +1,6 @@
 #pragma once
 #include "../tests.h"
+#include "../lang/ast.h"
 
 namespace ast_test {
     inline void run() {

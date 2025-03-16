@@ -1,6 +1,7 @@
 #pragma once
 #include "../tests.h"
 #include "../lang/ast.h"
+#include "../lang/parser.h"
 
 namespace parser_test {
     inline void run() {
@@ -32,6 +33,20 @@ namespace parser_test {
 
         tests::_assert(ast.get(), __LINE__);
         tests::_assert(node->statements.size() == 3, __LINE__);
+
+        code = R"(
+           const memset<int> a = 3;
+           input<int, WireColor::Green> b;
+
+           output<int, WireColor::Red>(a * b)
+        )";
+
+        tokens = tokenize(code);
+        parser = Parser(tokens);
+        ast = parser.parse();
+        node = dynamic_cast<BlockNode *>(ast.get());
+
+        tests::_assert(!node->statements.empty(), __LINE__);
     }
 
     inline tests::TestRegistrar registrar({__FILE_NAME__, run});
