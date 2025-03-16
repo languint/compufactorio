@@ -18,5 +18,7 @@ add_executable(compufactorio main.cpp
         lang/parser.h
         tests.h
         all_tests.h
+        tests/parser_test.h
+        lang/type_checker.h
 )
 

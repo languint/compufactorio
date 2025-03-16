@@ -15,18 +15,14 @@ void printHeader() {
 int main() {
     printHeader();
 
-    #ifndef NDEBUG
-        tests::runTests();
-    #endif
+#ifndef NDEBUG
+    tests::runTests();
+#endif
 
     const std::string code = R"(
-        memset<int> counter = 0;
-
-        func increment(int tick) {
-            counter += 1;
-        }
-
-        events.register(Events::OnTick, increment);
+        const memset<int> a = 3;
+        input<int, WireColor::Green> b;
+        output<int, WireColor::Red>(b);
     )";
 
     const std::vector<std::string> tokens = tokenize(code);

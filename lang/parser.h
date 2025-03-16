@@ -7,7 +7,11 @@
 
 class Parser {
 public:
-    explicit Parser(const std::vector<std::string> &tokens_) : tokens(tokens_), pos(0) {
+    std::vector<std::string> tokens;
+
+    explicit Parser(const std::vector<std::string> &tokens_) {
+        tokens = tokens_;
+        pos = 0;
     }
 
     std::unique_ptr<ASTNode> parse() {
@@ -23,7 +27,6 @@ public:
     }
 
 private:
-    const std::vector<std::string> &tokens;
     size_t pos;
 
     bool match(const std::string &token) {
@@ -46,6 +49,12 @@ private:
         }
         if (match("events")) {
             return parseEventRegister();
+        }
+        if (match("input")) {
+            return parseInput();
+        }
+        if (match("output")) {
+            return parseOutput();
         }
         if (pos < tokens.size() - 1) {
             if (const std::string nextOp = tokens[pos + 1]; nextOp == "=" || nextOp == "+=" || nextOp == "-=" ||
@@ -122,5 +131,30 @@ private:
         match(")");
         match(";");
         return std::make_unique<EventRegisterNode>(event, function);
+    }
+
+    std::unique_ptr<InputNode> parseInput() {
+        match("input");
+        match("<");
+        std::string type = tokens[pos++];
+        match(",");
+        std::string wireColor = tokens[pos++];
+        match(">");
+        std::string name = tokens[pos++];
+        match(";");
+        return std::make_unique<InputNode>(name, type, wireColor);
+    }
+
+    std::unique_ptr<OutputNode> parseOutput() {
+        match("output");
+        match("<");
+        std::string type = tokens[pos++];
+        match(",");
+        std::string wireColor = tokens[pos++];
+        match(">");
+        match("(");
+        auto params = parseParameters();
+        match(";");
+        return std::make_unique<OutputNode>(type, wireColor, params[0]);
     }
 };
