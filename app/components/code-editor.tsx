@@ -22,6 +22,11 @@ export function CodeEditor({ native }: CodeEditorProps) {
 
     monaco.editor.setTheme("OneDarkPro");
 
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      noLib: true,
+      allowNonTsExtensions: true,
+    });
+
     monaco.languages.typescript.typescriptDefaults.addExtraLib(lib);
 
     monaco.languages.registerCompletionItemProvider(
