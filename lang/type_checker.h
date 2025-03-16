@@ -9,7 +9,6 @@ class TypeChecker {
 public:
     void check(ASTNode *node) {
         if (!node) return;
-
         if (const auto *memsetNode = dynamic_cast<MemsetNode *>(node)) {
             checkMemset(memsetNode);
         } else if (auto *funcNode = dynamic_cast<FunctionNode *>(node)) {
