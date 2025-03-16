@@ -1,6 +1,8 @@
+#include "tests.h"
 #include "util.h"
 #include "lang/ast.h"
 #include "lang/parser.h"
+#include "all_tests.h"
 
 void printHeader() {
     util::ansiColors("Compufactorio!", {AnsiColor::BrightGreen});
@@ -12,6 +14,11 @@ void printHeader() {
 
 int main() {
     printHeader();
+
+    #ifndef NDEBUG
+        tests::runTests();
+    #endif
+
     const std::string code = R"(
         memset<int> counter = 0;
 
