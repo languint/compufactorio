@@ -38,12 +38,13 @@ namespace tests {
     }
 
     inline void runTests() {
-        const auto start = std::chrono::system_clock::now();
         util::ansiColors("[TESTS]: Running " + std::to_string(testRegistry().size()) + " test(s).\n",
                          {AnsiColor::BrightBlue});
 
         int totalSuccesses = 0;
         int totalFailures = 0;
+
+        const auto start = std::chrono::system_clock::now();
 
         for (const auto &[name, testFunc]: testRegistry()) {
             try {
@@ -56,13 +57,15 @@ namespace tests {
             }
         }
 
+        const auto end = std::chrono::system_clock::now();
+        const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
         AnsiColor finalColor = totalFailures > 0 ? AnsiColor::Red : AnsiColor::BrightWhite;
 
         util::ansiColors(
             "[TESTS]: Tests succeeded: " + std::to_string(totalSuccesses) + ", Tests failed: " +
             std::to_string(totalFailures), {finalColor});
-        const auto end = std::chrono::system_clock::now();
-        const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
         std::cout << "\tTests ran in " << duration.count() << "µs" << std::endl;
     }
 } // namespace tests

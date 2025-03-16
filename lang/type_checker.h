@@ -20,10 +20,13 @@ public:
             checkEventRegister(eventNode);
         } else if (const auto *blockNode = dynamic_cast<BlockNode *>(node)) {
             checkBlock(blockNode);
-        } else if (auto *inputNode = dynamic_cast<InputNode *>(node)) {
+        } else if (const auto *inputNode = dynamic_cast<InputNode *>(node)) {
             checkInput(inputNode);
+        } else if (const auto *outputNode = dynamic_cast<OutputNode *>(node)) {
+            checkOutput(outputNode);
         } else {
             std::cerr << "Unknown node type in type checker!\n";
+            node->print();
         }
     }
 
@@ -76,6 +79,25 @@ private:
         }
     }
 
-    void checkInput(InputNode *node) {
+    void checkInput(const InputNode *node) {
+        if (symbolTable.contains(node->name)) {
+            std::cerr << "Error: Input '" << node->name << "' already declared.\n";
+        }
+        if (node->type != "int") {
+            std::cerr << "Error: Input '" << node->type << "' not an integer.\n";
+        }
+        if (node->wireColor != "WireColor::Red" && node->wireColor != "WireColor::Green") {
+            std::cerr << "Error: Unknown WireColor '" << node->wireColor << ".\n";
+        }
+        symbolTable[node->name] = node->name;
+    }
+
+    static void checkOutput(const OutputNode *node) {
+        if (node->type != "int") {
+            std::cerr << "Error: Output '" << node->type << "' not an integer.\n";
+        }
+        if (node->wireColor != "WireColor::Red" && node->wireColor != "WireColor::Green") {
+            std::cerr << "Error: Unknown WireColor '" << node->wireColor << ".\n";
+        }
     }
 };
