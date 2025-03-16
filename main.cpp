@@ -3,6 +3,7 @@
 #include "lang/ast.h"
 #include "lang/parser.h"
 #include "all_tests.h"
+#include "lang/type_checker.h"
 
 void printHeader() {
     util::ansiColors("Compufactorio!", {AnsiColor::BrightGreen});
@@ -31,6 +32,8 @@ int main() {
 
     if (const std::unique_ptr<ASTNode> ast = parser.parse()) {
         ast->print();
+        TypeChecker checker;
+        checker.check(ast.get());
     }
 
     return 0;
