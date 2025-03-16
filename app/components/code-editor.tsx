@@ -1,10 +1,10 @@
-import type { editor } from "monaco-editor";
+import type { editor, languages } from "monaco-editor";
 import OneDarkPro from "../one-dark-pro.json";
 import { Editor, type EditorProps, type Monaco } from "@monaco-editor/react";
 
-import { lib } from "lang/lib";
-import { VirtualSignals } from "lang/signals";
-import { VirtualSignalCompletor } from "lang/completion/signal-completion";
+import { VirtualSignalCompletor } from "@/completion/signal-completion";
+import { Syntax } from "@/syntax";
+import { TypeCompletor } from "@/completion/type-completions";
 
 interface CodeEditorProps {
   native?: EditorProps;
@@ -12,37 +12,47 @@ interface CodeEditorProps {
 
 export function CodeEditor({ native }: CodeEditorProps) {
   const handleEditorDidMount = (
-    editor: editor.IStandaloneCodeEditor,
+    editorInstance: editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
+    monaco.languages.register({ id: "compufactorio" });
+
+    monaco.languages.setMonarchTokensProvider(
+      "compufactorio",
+      Syntax as languages.IMonarchLanguage
+    );
+
     monaco.editor.defineTheme(
       "OneDarkPro",
       OneDarkPro as editor.IStandaloneThemeData
     );
-
     monaco.editor.setTheme("OneDarkPro");
 
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      noLib: true,
-      allowNonTsExtensions: true,
-    });
-
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(lib);
-
     monaco.languages.registerCompletionItemProvider(
-      "typescript",
+      "compufactorio",
       VirtualSignalCompletor(monaco)
     );
 
-    editor.onDidChangeModelContent(() => {
-      editor.trigger("keyboard", "editor.action.triggerSuggest", {});
-    });
+    monaco.languages.registerCompletionItemProvider(
+      "compufactorio",
+      TypeCompletor(monaco)
+    );
+
+    const model = editorInstance.getModel();
+    if (model) {
+      monaco.editor.setModelLanguage(model, "compufactorio");
+    }
   };
 
   return (
     <Editor
-      defaultLanguage="typescript"
+      defaultLanguage="compufactorio"
       onMount={handleEditorDidMount}
+      options={{
+        acceptSuggestionOnCommitCharacter: false,
+        suggestOnTriggerCharacters: true,
+        quickSuggestions: true,
+      }}
       {...native}
     />
   );

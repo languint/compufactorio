@@ -60,7 +60,7 @@ export const VirtualSignals = {
   Z: { name: "signal-Z", iconId: "signal_Z" },
 } as Readonly<{ [k: string]: Signal }>;
 
-interface Signal {
+export interface Signal {
   name: string;
   iconId: string; // /signal/[iconId].png
 }
