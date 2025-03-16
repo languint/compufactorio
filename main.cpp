@@ -7,7 +7,6 @@
 
 void printHeader() {
     util::ansiColors("Compufactorio!", {AnsiColor::BrightGreen});
-    std::cout << "C++ Version: " << __cplusplus << "\n";
     std::cout << "---" << "\n";
     std::cout << "\n";
 }
