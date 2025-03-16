@@ -4,5 +4,7 @@ project(compufactorio)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(compufactorio main.cpp
-        util.h)
+        util.h
+        lang/ast.h
+        lang/parser.h)
 

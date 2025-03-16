@@ -54,7 +54,7 @@ namespace util {
         return res;
     }
 
-    inline void ansiColors(const std::string &string, std::vector<AnsiColor> codes) {
+    inline void ansiColors(const std::string &string, const std::vector<AnsiColor>& codes) {
         std::string result;
 
         for (const auto &code: codes) {
