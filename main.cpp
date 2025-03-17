@@ -36,10 +36,13 @@ int main() {
     }
 
     std::filesystem::path project_root = std::filesystem::current_path().parent_path();
-    std::filesystem::path filepath = project_root / "blueprint/objects/clock-tile.json";
+    std::filesystem::path filepath = project_root / "blueprint/objects/tile.json";
     std::ifstream file(filepath);
-    const nlohmann::json j = blueprint::loadFile(filepath);
-    std::cout << blueprint::encode(j) << std::endl;
+    const json j = blueprint::io::loadFile(filepath);
+    std::cout << j.dump(4) << std::endl;
+    auto b = blueprint::createBlueprintFromJSON(j.at("blueprint"));
+    std::cout << blueprint::createJSONFromBlueprint(b).dump(4);
+    std::cout << blueprint::io::encode(blueprint::createJSONFromBlueprint(b)) << std::endl;
 
     return 0;
 }

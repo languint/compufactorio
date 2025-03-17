@@ -26,6 +26,7 @@ add_executable(compufactorio main.cpp
         tests/type_checker_test.h
         blueprint/blueprint.h
         base64.h
+        blueprint/types.h
 )
 
 target_link_libraries(compufactorio PRIVATE nlohmann_json::nlohmann_json)
