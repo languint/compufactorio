@@ -3,6 +3,8 @@ project(compufactorio)
 
 set(CMAKE_CXX_STANDARD 20)
 
+find_package(nlohmann_json 3.11.3 REQUIRED)
+
 file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/tests/*.h")
 
 # Generate a header file with all tests.
@@ -22,3 +24,4 @@ add_executable(compufactorio main.cpp
         lang/type_checker.h
 )
 
+target_link_libraries(compufactorio PRIVATE nlohmann_json::nlohmann_json)

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ast.h"
 #include <unordered_map>
 #include <string>
