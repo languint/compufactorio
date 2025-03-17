@@ -4,6 +4,7 @@ project(compufactorio)
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(nlohmann_json 3.11.3 REQUIRED)
+find_package(ZLIB)
 
 file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/tests/*.h")
 
@@ -22,6 +23,9 @@ add_executable(compufactorio main.cpp
         all_tests.h
         tests/parser_test.h
         lang/type_checker.h
+        tests/type_checker_test.h
+        blueprint/blueprint.h
 )
 
 target_link_libraries(compufactorio PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(compufactorio PRIVATE z)

@@ -58,7 +58,7 @@ namespace tests {
         }
 
         const auto end = std::chrono::system_clock::now();
-        const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
         AnsiColor finalColor = totalFailures > 0 ? AnsiColor::Red : AnsiColor::BrightWhite;
 
@@ -66,6 +66,6 @@ namespace tests {
             "[TESTS]: Tests succeeded: " + std::to_string(totalSuccesses) + ", Tests failed: " +
             std::to_string(totalFailures), {finalColor});
 
-        std::cout << "\tTests ran in " << duration.count() << "µs" << std::endl;
+        std::cout << "\tTests ran in " << duration.count() << "ms" << std::endl;
     }
 } // namespace tests
