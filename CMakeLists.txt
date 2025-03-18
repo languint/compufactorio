@@ -27,6 +27,8 @@ add_executable(compufactorio main.cpp
         blueprint/blueprint.h
         base64.h
         blueprint/types.h
+        blueprint/tiler.h
+        tests/blueprint_test.h
 )
 
 target_link_libraries(compufactorio PRIVATE nlohmann_json::nlohmann_json)

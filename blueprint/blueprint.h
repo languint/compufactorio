@@ -8,6 +8,68 @@
 
 using json = nlohmann::json;
 
+inline std::filesystem::path ROOT = std::filesystem::current_path().parent_path();
+
+class Blueprint {
+public:
+    std::vector<BlueprintEntity> entities;
+    std::vector<BlueprintWire> wires;
+    std::string item;
+    std::string label;
+    int version = 0;
+
+    Blueprint() = default;
+
+    BlueprintEntity *getEntity(const int entity_number) {
+        for (auto &entity: entities) {
+            if (entity.entity_number == entity_number) {
+                return &entity;
+            }
+        }
+        std::cerr << "Entity: " << entity_number << " not found" << std::endl;
+        return nullptr;
+    };
+
+    BlueprintEntity *getEntity(const MapPosition &position) {
+        for (auto &entity: entities) {
+            if (entity.position == position) {
+                return &entity;
+            }
+        }
+        return nullptr;
+    }
+
+    void setEntity(const int entity_number, const BlueprintEntity &entity) {
+        entities[entity_number] = entity;
+    }
+
+    void addEntity(const BlueprintEntity &entity) {
+        entities.push_back(entity);
+    }
+
+    [[nodiscard]] int getNextEntityNumber() const {
+        return entities.back().entity_number + 1;
+    }
+
+    void shift(const MapPosition offset) {
+        for (auto &entity: entities) {
+            entity.position = entity.position + offset;
+        }
+    }
+
+    [[nodiscard]] Blueprint copy() const {
+        const auto bp = new Blueprint();
+        bp->entities = this->entities;
+        bp->wires = this->wires;
+        bp->item = this->item;
+        bp->label = this->label;
+        bp->version = this->version;
+
+        return *bp;
+    }
+};
+
+
 namespace blueprint::io {
     inline json loadFile(const std::string &path) {
         std::ifstream file(path);

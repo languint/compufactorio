@@ -5,6 +5,7 @@
 #include "blueprint/blueprint.h"
 #include "lang/type_checker.h"
 #include "all_tests.h"
+#include "blueprint/tiler.h"
 
 void printHeader() {
     util::ansiColors("Compufactorio!", {AnsiColor::BrightGreen});
@@ -18,30 +19,16 @@ int main() {
 #ifndef NDEBUG
     tests::runTests();
 #endif
-
-    const std::string code = R"(
-        const memset<int> a = 3;
-        input<int, WireColor::Green> b;
-        output<int, WireColor::Red>(a * b);
-    )";
-
-    const std::vector<std::string> tokens = tokenize(code);
-
-    Parser parser(tokens);
-
-    if (const std::unique_ptr<ASTNode> ast = parser.parse()) {
-        ast->print();
-        TypeChecker checker;
-        checker.check(ast.get(), false);
-    }
-
-    std::filesystem::path project_root = std::filesystem::current_path().parent_path();
-    std::filesystem::path filepath = project_root / "blueprint/objects/tile.json";
+    std::filesystem::path filepath = ROOT / "blueprint/objects/tile.json";
     std::ifstream file(filepath);
     const json j = blueprint::io::loadFile(filepath);
-    std::cout << j.dump(4) << std::endl;
-    auto b = blueprint::createBlueprintFromJSON(j.at("blueprint"));
-    std::cout << blueprint::createJSONFromBlueprint(b).dump(4);
+
+    Blueprint b = blueprint::createBlueprintFromJSON(j.at("blueprint"));
+    tiler::addTile(b, Tile{
+                       {1, 0},
+                       RAM
+                   });
+
     std::cout << blueprint::io::encode(blueprint::createJSONFromBlueprint(b)) << std::endl;
 
     return 0;
