@@ -5,7 +5,7 @@
 
 
 int main(const int argc, char *argv[]) {
-    const std::filesystem::path currentExecutingPath = std::filesystem::current_path().parent_path();
+    const std::filesystem::path currentExecutingPath = std::filesystem::current_path();
 
     if (argc < 2) {
         util::log("You must provide a subcommand", AnsiColor::BgRed);
@@ -22,6 +22,8 @@ int main(const int argc, char *argv[]) {
     if (command == "build") {
         if (!util::fileExists(currentExecutingPath / "info.toml")) {
             util::log("No project found at: " + currentExecutingPath.string() + "!", AnsiColor::BgRed);
+        } else {
+            util::log("Building project...");
         }
     } else if (command == "help") {
         std::cout << "Available commands:" << std::endl;

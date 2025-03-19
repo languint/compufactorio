@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(sfml main.cpp
         util.h
         lang/ast.h
-        lang/types.h)
+        lang/types.h
+        toml.h)
