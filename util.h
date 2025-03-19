@@ -69,13 +69,13 @@ namespace util {
         return std::ifstream(path).good();
     }
 
-    inline std::vector<std::string> loadFile(const std::string &path) {
+    inline std::string loadFile(const std::string &path) {
         if (std::ifstream file(path); file.is_open()) {
-            std::vector<std::string> result;
+            std::string result;
             std::string line;
 
             while (std::getline(file, line)) {
-                result.push_back(line);
+                result += line + "\n";
             }
 
             return result;
