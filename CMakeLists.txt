@@ -16,11 +16,9 @@ foreach(HEADER ${HEADERS})
 endforeach()
 
 add_executable(compufactorio main.cpp
-        util.h
         lang/ast.h
         lang/parser.h
         tests.h
-        all_tests.h
         tests/parser_test.h
         lang/type_checker.h
         tests/type_checker_test.h
