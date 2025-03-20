@@ -74,20 +74,14 @@ namespace ast::nodes {
     class FunctionCallNode final : public ASTNode {
     public:
         std::string name;
-        std::vector<std::unique_ptr<ASTNode>> arguments;
+        std::vector<std::unique_ptr<ASTNode> > arguments;
 
-        FunctionCallNode(std::string name, std::vector<std::unique_ptr<ASTNode>> arguments)
-            : name(std::move(name)), arguments(std::move(arguments)) {}
+        FunctionCallNode(std::string name, std::vector<std::unique_ptr<ASTNode> > arguments)
+            : name(std::move(name)), arguments(std::move(arguments)) {
+        }
 
         void repr() const override {
-            std::cout << "FunctionCallNode(name=" << name << ", args=[";
-            for (size_t i = 0; i < arguments.size(); ++i) {
-                arguments[i]->repr();
-                if (i < arguments.size() - 1) {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << "])" << std::endl;
+            std::cout << "FunctionCallNode(name=" << name << ")" << std::endl;
         }
     };
 
@@ -99,13 +93,7 @@ namespace ast::nodes {
         }
 
         void repr() const override {
-            std::cout << "ReturnNode(expression=";
-            if (expression) {
-                expression->repr();
-            } else {
-                std::cout << "nullptr";
-            }
-            std::cout << ")" << std::endl;
+            std::cout << "ReturnNode()" << std::endl;
         }
     };
 

@@ -19,7 +19,7 @@ bool validateTOML(const toml::table &content) {
 
     for (const auto &field: expectedFields) {
         if (!content["info"][field]) {
-            util::log("Missing field \"" + field + "\" in info.toml!", BgYellow);
+            util::log("Missing field \"" + field + "\" in project.toml!", BgYellow);
             missingFields.push_back(field);
             valid = false;
         }
@@ -29,7 +29,7 @@ bool validateTOML(const toml::table &content) {
 }
 
 toml::table loadProjectFile(const std::filesystem::path &currentExecutingPath) {
-    const std::filesystem::path filePath = currentExecutingPath / "info.toml";
+    const std::filesystem::path filePath = currentExecutingPath / "project.toml";
 
     if (!util::fileExists(filePath)) {
         util::log("Failed to locate info.toml in " + currentExecutingPath.string() + "!", BgRed);
@@ -59,8 +59,8 @@ int main(const int argc, char *argv[]) {
     }
 
     if (command == "build") {
-        if (!util::fileExists(currentExecutingPath / "info.toml")) {
-            util::log("Failed to locate info.toml in " + currentExecutingPath.string() + "!", BgRed);
+        if (!util::fileExists(currentExecutingPath / "project.toml")) {
+            util::log("Failed to locate project.toml in " + currentExecutingPath.string() + "!", BgRed);
             return EXIT_FAILURE;
         }
 
@@ -72,7 +72,7 @@ int main(const int argc, char *argv[]) {
         }
 
         if (table.empty()) {
-            util::log("Failed to load project!", BgRed);
+            util::log("Failed to validate project: project.toml is empty!", BgRed);
             return EXIT_FAILURE;
         }
 
@@ -84,7 +84,7 @@ int main(const int argc, char *argv[]) {
         const std::string projectName = table["info"]["name"].value<std::string>().value_or("undefined");
         const std::string projectVersion = table["info"]["version"].value<std::string>().value_or("0.0.0");
 
-        util::log("Building project: " + projectName + "@" + projectVersion + ".");
+        util::log("Building project: " + projectName + "@" + projectVersion);
 
         const std::vector<std::filesystem::path> files = util::findAllFilesInDirectory(
             currentExecutingPath / "src", ".sfml");
