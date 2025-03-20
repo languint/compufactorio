@@ -2,51 +2,17 @@
 #include "util.h"
 #include <filesystem>
 
+#include "sfml.h"
 #include "lang/ast.h"
 #include "lang/parser.h"
+#include "lang/transpiler.h"
 
-bool validateTOML(const toml::table &content) {
-    std::vector<std::string> missingFields = {};
-    std::vector<std::string> expectedFields = {
-        "author", "dependencies", "description", "factorio_version", "name", "title", "version"
-    };
-
-    bool valid = true;
-
-    if (!content["info"]) {
-        valid = false;
-    }
-
-    for (const auto &field: expectedFields) {
-        if (!content["info"][field]) {
-            util::log("Missing field \"" + field + "\" in project.toml!", BgYellow);
-            missingFields.push_back(field);
-            valid = false;
-        }
-    }
-
-    return valid;
-}
-
-toml::table loadProjectFile(const std::filesystem::path &currentExecutingPath) {
-    const std::filesystem::path filePath = currentExecutingPath / "project.toml";
-
-    if (!util::fileExists(filePath)) {
-        util::log("Failed to locate info.toml in " + currentExecutingPath.string() + "!", BgRed);
-    }
-
-    const auto fileContent = util::loadFile(filePath);
-
-    const auto table = toml::parse(fileContent);
-
-    return table;
-}
 
 int main(const int argc, char *argv[]) {
     const std::filesystem::path currentExecutingPath = std::filesystem::current_path();
 
     if (argc < 2) {
-        util::log("You must provide a subcommand", BgRed);
+        util::log("You must provide a subcommand, try 'help'.", BgRed);
         return EXIT_FAILURE;
     }
 
@@ -64,7 +30,7 @@ int main(const int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        const auto table = loadProjectFile(currentExecutingPath);
+        const auto table = sfml::loadProjectFile(currentExecutingPath);
 
         if (!is_directory(currentExecutingPath / "src")) {
             util::log("Failed to locate src directory!", BgRed);
@@ -76,7 +42,12 @@ int main(const int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        if (const bool validProject = validateTOML(table); !validProject) {
+        if (const bool validProject = sfml::validateProjectInfo(table); !validProject) {
+            util::log("Failed to validate project!", BgRed);
+            return EXIT_FAILURE;
+        }
+
+        if (const bool validProject = sfml::validateProjectCompiler(table); !validProject) {
             util::log("Failed to validate project!", BgRed);
             return EXIT_FAILURE;
         }
@@ -94,7 +65,10 @@ int main(const int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        util::log("Building " + std::to_string(files.size()) + " file(s).");
+        const std::string outputDir = table["compile"]["out-dir"].value<std::string>().value_or("dist");
+
+        util::log("Building " + std::to_string(files.size()) + " file(s) to /" + outputDir + ".");
+
 
         for (const auto &file: files) {
             const auto tokens = ast::tokenize(util::loadFile(file));
@@ -102,6 +76,12 @@ int main(const int argc, char *argv[]) {
             const std::unique_ptr<ast::nodes::ASTNode> ast = parser.parse();
 
             ast->repr();
+
+
+            const std::filesystem::path outputPath = transpiler::getLuaFilePath(
+                file, currentExecutingPath / outputDir);
+
+            transpiler::createLuaFile(outputPath);
         }
     } else if (command == "help") {
         std::cout << "Available commands:" << std::endl;
