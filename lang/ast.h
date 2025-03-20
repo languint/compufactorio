@@ -71,6 +71,44 @@ namespace ast::nodes {
         }
     };
 
+    class FunctionCallNode final : public ASTNode {
+    public:
+        std::string name;
+        std::vector<std::unique_ptr<ASTNode>> arguments;
+
+        FunctionCallNode(std::string name, std::vector<std::unique_ptr<ASTNode>> arguments)
+            : name(std::move(name)), arguments(std::move(arguments)) {}
+
+        void repr() const override {
+            std::cout << "FunctionCallNode(name=" << name << ", args=[";
+            for (size_t i = 0; i < arguments.size(); ++i) {
+                arguments[i]->repr();
+                if (i < arguments.size() - 1) {
+                    std::cout << ", ";
+                }
+            }
+            std::cout << "])" << std::endl;
+        }
+    };
+
+    class ReturnNode final : public ASTNode {
+    public:
+        std::unique_ptr<ASTNode> expression;
+
+        explicit ReturnNode(std::unique_ptr<ASTNode> expression) : expression(std::move(expression)) {
+        }
+
+        void repr() const override {
+            std::cout << "ReturnNode(expression=";
+            if (expression) {
+                expression->repr();
+            } else {
+                std::cout << "nullptr";
+            }
+            std::cout << ")" << std::endl;
+        }
+    };
+
     class BinaryOperatorNode final : public ASTNode {
     public:
         std::string fst;

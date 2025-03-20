@@ -48,6 +48,15 @@ private:
         if (match("fn")) {
             return parseFunction();
         }
+        if (match("return")) {
+            return parseReturn();
+        }
+
+        if (pos < tokens.size() && pos + 1 < tokens.size() && tokens[pos + 1] == "(") {
+            const std::string functionName = tokens[pos++];
+            return parseFunctionCall(functionName);
+        }
+
         if (pos < tokens.size() - 1) {
             if (const std::string nextOp = tokens[pos + 1]; nextOp == "=" || nextOp == "+=" || nextOp == "-=" ||
                                                             nextOp == "*=" || nextOp == "/=" || nextOp == "+" || nextOp
@@ -176,5 +185,33 @@ private:
             }
         }
         return std::make_unique<ast::nodes::FunctionNode>(name, std::move(params), std::move(body));
+    }
+
+    std::unique_ptr<ast::nodes::FunctionCallNode> parseFunctionCall(const std::string &functionName) {
+        match("(");
+        std::vector<std::unique_ptr<ast::nodes::ASTNode> > args;
+
+        if (!match(")")) {
+            do {
+                if (auto arg = parseExpression()) {
+                    args.push_back(std::move(arg));
+                }
+            } while (match(","));
+
+            match(")");
+        }
+
+        match(";");
+
+        return std::make_unique<ast::nodes::FunctionCallNode>(functionName, std::move(args));
+    }
+
+    std::unique_ptr<ast::nodes::ReturnNode> parseReturn() {
+        match("return");
+
+        auto expr = parseExpression();
+        match(";");
+
+        return std::make_unique<ast::nodes::ReturnNode>(std::move(expr));
     }
 };
