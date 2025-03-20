@@ -31,6 +31,8 @@ namespace types {
         Control,
         Data,
         Settings,
+        Updates,
+        Fixes,
         Invalid,
     };
 
@@ -88,6 +90,8 @@ namespace types {
         if (type == FileType::Control) return "Control";
         if (type == FileType::Data) return "Data";
         if (type == FileType::Settings) return "Settings";
+        if (type == FileType::Updates) return "Updates";
+        if (type == FileType::Fixes) return "Fixes";
         return "Invalid";
     }
 
@@ -95,6 +99,8 @@ namespace types {
         if (type == "control") return FileType::Control;
         if (type == "data") return FileType::Data;
         if (type == "settings") return FileType::Settings;
+        if (type == "updates") return FileType::Updates;
+        if (type == "fixes") return FileType::Fixes;
         return FileType::Invalid;
     }
 }

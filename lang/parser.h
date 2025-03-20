@@ -27,14 +27,21 @@ public:
         return root;
     }
 
-    // ReSharper disable once CppParameterMayBeConstPtrOrRef
-    static std::unique_ptr<ast::nodes::FileTypeNode> getFileType(const ast::nodes::BlockNode *root) {
+    static std::vector<types::FileType> getFileTypes(const ast::nodes::BlockNode *root) {
+        std::vector<types::FileType> types;
+
         for (const auto &node: root->statements) {
             if (const auto fileTypeNode = dynamic_cast<ast::nodes::FileTypeNode *>(node.get())) {
-                return std::make_unique<ast::nodes::FileTypeNode>(*fileTypeNode);
+                for (const auto &type: fileTypeNode->types) {
+                    types.push_back(type);
+                }
             }
         }
-        return nullptr;
+
+        std::sort(types.begin(), types.end());
+        types.erase(unique(types.begin(), types.end()), types.end());
+
+        return types;
     }
 
 private:
@@ -50,10 +57,30 @@ private:
 
     std::unique_ptr<ast::nodes::ASTNode> parseStatement() {
         if (pos < tokens.size() && !tokens[pos].empty() && tokens[pos][0] == '#') {
-            const std::string fileTypeToken = tokens[pos].substr(1);
-            pos++;
-            std::cout << fileTypeToken << std::endl;
-            return std::make_unique<ast::nodes::FileTypeNode>(types::stringToFileType(fileTypeToken));
+            std::vector<std::string> fileTypeTokens;
+
+            while (pos < tokens.size() && tokens[pos][0] == '#') {
+                std::string line = tokens[pos].substr(1);
+                std::istringstream iss(line);
+                std::string fileType;
+
+                while (iss >> fileType) {
+                    fileTypeTokens.push_back(fileType);
+                }
+
+                pos++;
+            }
+            for (const auto &type: fileTypeTokens) {
+                std::cout << "FileType: " << type << std::endl;
+            }
+
+            std::vector<types::FileType> types;
+
+            for (const auto &type: fileTypeTokens) {
+                types.push_back(types::stringToFileType(type));
+            }
+
+            return std::make_unique<ast::nodes::FileTypeNode>(types);
         }
 
         if (match("const")) {
@@ -230,11 +257,5 @@ private:
         match(";");
 
         return std::make_unique<ast::nodes::ReturnNode>(std::move(expr));
-    }
-
-    std::unique_ptr<ast::nodes::FileTypeNode> parseFileType() {
-        const std::string value = tokens[pos++];
-
-        return std::make_unique<ast::nodes::FileTypeNode>(types::stringToFileType(value));
     }
 };

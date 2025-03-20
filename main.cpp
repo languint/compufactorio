@@ -7,7 +7,6 @@
 #include "lang/parser.h"
 #include "lang/transpiler.h"
 
-
 int main(const int argc, char *argv[]) {
     const std::filesystem::path currentExecutingPath = std::filesystem::current_path();
 
@@ -85,14 +84,15 @@ int main(const int argc, char *argv[]) {
                 return EXIT_FAILURE;
             }
 
-            std::unique_ptr<ast::nodes::FileTypeNode> fileType = Parser::getFileType(blockNode);
+            auto fileType = Parser::getFileTypes(blockNode);
 
-            if (!fileType) {
-                util::log("Failed to parse file: fileType is nullptr!", BgRed);
+            if (fileType.empty()) {
+                util::log("Failed to parse file: no file types!", BgRed);
                 return EXIT_FAILURE;
             }
 
-            const std::string subDirectory = sfml::getFolderForFileType(fileType->type);
+            const std::string subDirectory = sfml::getFolderForFileType(fileType[0]);
+
             sfml::createDirectory(currentExecutingPath / outputDir / subDirectory);
             const std::filesystem::path outputPath = transpiler::getLuaFilePath(
                 file, currentExecutingPath / outputDir / subDirectory);
