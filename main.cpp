@@ -87,7 +87,15 @@ int main(const int argc, char *argv[]) {
             auto fileType = Parser::getFileTypes(blockNode);
 
             if (fileType.empty()) {
-                transpiler::createLuaFile(transpiler::getLuaFilePath(file, currentExecutingPath / outputDir));
+                const auto path = transpiler::getLuaFilePath(file, currentExecutingPath / outputDir);
+                transpiler::createLuaFile(path);
+
+                auto transpiler = new transpiler::Transpiler(std::move(ast));
+
+                if (std::fstream outFile(path); outFile.
+                    is_open()) {
+                    outFile << transpiler->transpile();
+                }
                 continue;
             }
 
@@ -99,6 +107,11 @@ int main(const int argc, char *argv[]) {
                 file, currentExecutingPath / outputDir / subDirectory);
 
             transpiler::createLuaFile(outputPath);
+            auto transpiler = new transpiler::Transpiler(std::move(ast));
+
+            if (std::fstream outFile(outputPath.string()); outFile.is_open()) {
+                outFile << transpiler->transpile();
+            }
         }
     } else if (command == "help") {
         std::cout << "Available commands:" << std::endl;
