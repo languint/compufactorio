@@ -69,17 +69,33 @@ int main(const int argc, char *argv[]) {
 
         util::log("Building " + std::to_string(files.size()) + " file(s) to /" + outputDir + ".");
 
+        sfml::createDirectory(currentExecutingPath / outputDir);
+        sfml::clearDirectory(currentExecutingPath / outputDir);
 
         for (const auto &file: files) {
             const auto tokens = ast::tokenize(util::loadFile(file));
             auto parser = Parser(tokens);
-            const std::unique_ptr<ast::nodes::ASTNode> ast = parser.parse();
+            std::unique_ptr<ast::nodes::ASTNode> ast = parser.parse();
 
             ast->repr();
 
+            auto *blockNode = dynamic_cast<ast::nodes::BlockNode *>(ast.get());
+            if (!blockNode) {
+                util::log("AST is not a BlockNode!", BgRed);
+                return EXIT_FAILURE;
+            }
 
+            std::unique_ptr<ast::nodes::FileTypeNode> fileType = Parser::getFileType(blockNode);
+
+            if (!fileType) {
+                util::log("Failed to parse file: fileType is nullptr!", BgRed);
+                return EXIT_FAILURE;
+            }
+
+            const std::string subDirectory = sfml::getFolderForFileType(fileType->type);
+            sfml::createDirectory(currentExecutingPath / outputDir / subDirectory);
             const std::filesystem::path outputPath = transpiler::getLuaFilePath(
-                file, currentExecutingPath / outputDir);
+                file, currentExecutingPath / outputDir / subDirectory);
 
             transpiler::createLuaFile(outputPath);
         }

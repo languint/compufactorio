@@ -27,6 +27,16 @@ public:
         return root;
     }
 
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
+    static std::unique_ptr<ast::nodes::FileTypeNode> getFileType(const ast::nodes::BlockNode *root) {
+        for (const auto &node: root->statements) {
+            if (const auto fileTypeNode = dynamic_cast<ast::nodes::FileTypeNode *>(node.get())) {
+                return std::make_unique<ast::nodes::FileTypeNode>(*fileTypeNode);
+            }
+        }
+        return nullptr;
+    }
+
 private:
     size_t pos;
 
@@ -39,6 +49,13 @@ private:
     }
 
     std::unique_ptr<ast::nodes::ASTNode> parseStatement() {
+        if (pos < tokens.size() && !tokens[pos].empty() && tokens[pos][0] == '#') {
+            const std::string fileTypeToken = tokens[pos].substr(1);
+            pos++;
+            std::cout << fileTypeToken << std::endl;
+            return std::make_unique<ast::nodes::FileTypeNode>(types::stringToFileType(fileTypeToken));
+        }
+
         if (match("const")) {
             return parseVariable(true);
         }
@@ -56,16 +73,16 @@ private:
             const std::string functionName = tokens[pos++];
             return parseFunctionCall(functionName);
         }
-
         if (pos < tokens.size() - 1) {
             if (const std::string nextOp = tokens[pos + 1]; nextOp == "=" || nextOp == "+=" || nextOp == "-=" ||
-                                                            nextOp == "*=" || nextOp == "/=" || nextOp == "+" || nextOp
-                                                            == "-" || nextOp == "*" || nextOp == "/") {
+                                                            nextOp == "*=" || nextOp == "/=" || nextOp == "+" ||
+                                                            nextOp == "-" || nextOp == "*" || nextOp == "/") {
                 return parseAssignment();
             }
         }
         return nullptr;
     }
+
 
     std::unique_ptr<ast::nodes::ASTNode> parseExpression() {
         if (pos >= tokens.size()) {
@@ -213,5 +230,11 @@ private:
         match(";");
 
         return std::make_unique<ast::nodes::ReturnNode>(std::move(expr));
+    }
+
+    std::unique_ptr<ast::nodes::FileTypeNode> parseFileType() {
+        const std::string value = tokens[pos++];
+
+        return std::make_unique<ast::nodes::FileTypeNode>(types::stringToFileType(value));
     }
 };

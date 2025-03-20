@@ -179,6 +179,18 @@ namespace ast::nodes {
             }
         }
     };
+
+    class FileTypeNode final : public ASTNode {
+    public:
+        types::FileType type;
+
+        explicit FileTypeNode(const types::FileType type) : type(type) {
+        }
+
+        void repr() const override {
+            std::cout << "FileTypeNode(" << fileTypeToString(type) << ")" << std::endl;
+        }
+    };
 }
 
 namespace ast {

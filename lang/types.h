@@ -27,6 +27,13 @@ namespace types {
         Invalid,
     };
 
+    enum class FileType {
+        Control,
+        Data,
+        Settings,
+        Invalid,
+    };
+
     inline BinaryOperator stringToBinaryOperator(const std::string &op) {
         if (op == "+=") return BinaryOperator::AddEquals;
         if (op == "-=") return BinaryOperator::SubEquals;
@@ -75,5 +82,19 @@ namespace types {
         if (op == UnaryOperator::LessThanOrEqual) return "<=";
         if (op == UnaryOperator::Not) return "!";
         return "Invalid";
+    }
+
+    inline std::string fileTypeToString(const FileType type) {
+        if (type == FileType::Control) return "Control";
+        if (type == FileType::Data) return "Data";
+        if (type == FileType::Settings) return "Settings";
+        return "Invalid";
+    }
+
+    inline FileType stringToFileType(const std::string &type) {
+        if (type == "control") return FileType::Control;
+        if (type == "data") return FileType::Data;
+        if (type == "settings") return FileType::Settings;
+        return FileType::Invalid;
     }
 }
