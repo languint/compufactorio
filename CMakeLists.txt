@@ -7,4 +7,5 @@ add_executable(sfml main.cpp
         util.h
         lang/ast.h
         lang/types.h
-        toml.h)
+        toml.h
+        lang/parser.h)

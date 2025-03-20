@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <filesystem>
 
 enum AnsiColor {
     Black = 30,
@@ -83,5 +84,28 @@ namespace util {
 
         log("Failed to open file: " + path + "!", AnsiColor::BrightRed);
         return {};
-    };
+    }
+
+    inline std::vector<std::filesystem::path> findAllFilesInDirectory(const std::filesystem::path &directoryPath) {
+        std::vector<std::filesystem::path> files;
+
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+            files.push_back(entry.path());
+        }
+
+        return files;
+    }
+
+    inline std::vector<std::filesystem::path> findAllFilesInDirectory(const std::filesystem::path &directoryPath,
+                                                                      const std::string &extension) {
+        std::vector<std::filesystem::path> files;
+
+        for (const auto &entry: std::filesystem::directory_iterator(directoryPath)) {
+            if (entry.path().extension() == extension) {
+                files.push_back(entry.path());
+            }
+        }
+
+        return files;
+    }
 };

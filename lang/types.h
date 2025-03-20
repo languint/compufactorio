@@ -39,7 +39,7 @@ namespace types {
         return BinaryOperator::Invalid;
     }
 
-    inline std::string binaryOperatorToString(BinaryOperator op) {
+    inline std::string binaryOperatorToString(const BinaryOperator op) {
         if (op == BinaryOperator::AddEquals) return "+=";
         if (op == BinaryOperator::SubEquals) return "-=";
         if (op == BinaryOperator::MulEquals) return "*=";
@@ -52,8 +52,8 @@ namespace types {
     }
 
     inline UnaryOperator stringToUnaryOperator(const std::string &op) {
-        if (op == "!=") return UnaryOperator::Equals;
-        if (op == "==") return UnaryOperator::NotEquals;
+        if (op == "!=") return UnaryOperator::NotEquals;
+        if (op == "==") return UnaryOperator::Equals;
         if (op == "&&") return UnaryOperator::And;
         if (op == "||") return UnaryOperator::Or;
         if (op == ">") return UnaryOperator::GreaterThan;
