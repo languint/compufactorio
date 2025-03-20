@@ -45,6 +45,9 @@ private:
         if (match("let")) {
             return parseVariable(false);
         }
+        if (match("fn")) {
+            return parseFunction();
+        }
         if (pos < tokens.size() - 1) {
             if (const std::string nextOp = tokens[pos + 1]; nextOp == "=" || nextOp == "+=" || nextOp == "-=" ||
                                                             nextOp == "*=" || nextOp == "/=" || nextOp == "+" || nextOp
@@ -72,13 +75,10 @@ private:
                     return std::make_unique<ast::nodes::BinaryOperatorNode>(
                         left, right, types::stringToBinaryOperator(op));
                 }
-            }
-
-            else if (tokens[pos] == "!=" || tokens[pos] == "==" ||
-                     tokens[pos] == ">" || tokens[pos] == "<" ||
-                     tokens[pos] == ">=" || tokens[pos] == "<=" ||
-                     tokens[pos] == "&&" || tokens[pos] == "||") {
-
+            } else if (tokens[pos] == "!=" || tokens[pos] == "==" ||
+                       tokens[pos] == ">" || tokens[pos] == "<" ||
+                       tokens[pos] == ">=" || tokens[pos] == "<=" ||
+                       tokens[pos] == "&&" || tokens[pos] == "||") {
                 const std::string op = tokens[pos++];
 
                 if (pos < tokens.size()) {
@@ -142,5 +142,39 @@ private:
         std::string value = tokens[pos++];
         match(";");
         return std::make_unique<ast::nodes::BinaryOperatorNode>(varName, value, types::stringToBinaryOperator(op));
+    }
+
+    std::vector<std::string> parseParameters() {
+        std::vector<std::string> params;
+        while (!match(")")) {
+            std::string param;
+            while (pos < tokens.size() && tokens[pos] != "," && tokens[pos] != ")") {
+                param += tokens[pos++] + " ";
+            }
+            if (!param.empty() && param.back() == ' ') {
+                param.pop_back();
+            }
+            if (!param.empty()) {
+                params.push_back(param);
+            }
+            match(",");
+        }
+        return params;
+    }
+
+    std::unique_ptr<ast::nodes::FunctionNode> parseFunction() {
+        std::string name = tokens[pos++];
+        match("(");
+        auto params = parseParameters();
+        match("{");
+        std::vector<std::unique_ptr<ast::nodes::ASTNode> > body;
+        while (!match("}")) {
+            if (auto stmt = parseStatement()) {
+                body.push_back(std::move(stmt));
+            } else {
+                pos++;
+            }
+        }
+        return std::make_unique<ast::nodes::FunctionNode>(name, std::move(params), std::move(body));
     }
 };

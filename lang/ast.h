@@ -20,6 +20,7 @@ namespace ast::nodes {
     class IdentifierNode;
     class LiteralNode;
     class BinaryOperatorNode;
+    class BlockNode;
 
     class VariableNode final : public ASTNode {
     public:
@@ -42,6 +43,30 @@ namespace ast::nodes {
                 expression->repr();
             } else {
                 std::cout << std::endl;
+            }
+        }
+    };
+
+    class FunctionNode final : public ASTNode {
+    public:
+        std::string name;
+        std::vector<std::string> arguments;
+        std::vector<std::unique_ptr<ASTNode> > body;
+
+        explicit FunctionNode(std::string name, std::vector<std::string> arguments,
+                              std::vector<std::unique_ptr<ASTNode> > body) : name(std::move(name)),
+                                                                             arguments(std::move(arguments)),
+                                                                             body(std::move(body)) {
+        }
+
+        void repr() const override {
+            std::cout << "FunctionNode(name=" << name << ", args=[";
+            for (const auto &arg: arguments) {
+                std::cout << arg << " ";
+            }
+            std::cout << "], body_size=" << body.size() << ")\n";
+            for (const auto &stmt: body) {
+                stmt->repr();
             }
         }
     };

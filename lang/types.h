@@ -64,7 +64,7 @@ namespace types {
         return UnaryOperator::Invalid;
     }
 
-    inline std::string unaryOperatorToString(UnaryOperator op) {
+    inline std::string unaryOperatorToString(const UnaryOperator op) {
         if (op == UnaryOperator::NotEquals) return "!=";
         if (op == UnaryOperator::Equals) return "==";
         if (op == UnaryOperator::And) return "&&";
