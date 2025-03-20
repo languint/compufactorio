@@ -191,6 +191,30 @@ namespace ast::nodes {
             std::cout << "FileTypeNode(" << types.size() << ")" << std::endl;
         }
     };
+
+    class ImportNode final : public ASTNode {
+    public:
+        std::string fileName;
+
+        explicit ImportNode(std::string fileName) : fileName(std::move(fileName)) {
+        }
+
+        void repr() const override {
+            std::cout << "ImportNode(" << fileName << ")" << std::endl;
+        }
+    };
+
+    class ExportNode final : public ASTNode {
+    public:
+        std::vector<std::string> arguments;
+
+        explicit ExportNode(std::vector<std::string> arguments) : arguments(std::move(arguments)) {
+        }
+
+        void repr() const override {
+            std::cout << "ExportNode(" << arguments.size() << ")" << std::endl;
+        }
+    };
 }
 
 namespace ast {

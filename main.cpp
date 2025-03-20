@@ -87,11 +87,12 @@ int main(const int argc, char *argv[]) {
             auto fileType = Parser::getFileTypes(blockNode);
 
             if (fileType.empty()) {
-                util::log("Failed to parse file: no file types!", BgRed);
-                return EXIT_FAILURE;
+                transpiler::createLuaFile(transpiler::getLuaFilePath(file, currentExecutingPath / outputDir));
+                continue;
             }
 
-            const std::string subDirectory = sfml::getFolderForFileType(fileType[0]);
+            const std::string subDirectory = sfml::getFolderForFileType(
+                fileType.empty() ? "/" : fileTypeToString(fileType[0]));
 
             sfml::createDirectory(currentExecutingPath / outputDir / subDirectory);
             const std::filesystem::path outputPath = transpiler::getLuaFilePath(

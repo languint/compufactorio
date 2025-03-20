@@ -95,6 +95,12 @@ private:
         if (match("return")) {
             return parseReturn();
         }
+        if (match("import")) {
+            return parseImport();
+        }
+        if (match("export")) {
+            return parseExport();
+        }
 
         if (pos < tokens.size() && pos + 1 < tokens.size() && tokens[pos + 1] == "(") {
             const std::string functionName = tokens[pos++];
@@ -257,5 +263,33 @@ private:
         match(";");
 
         return std::make_unique<ast::nodes::ReturnNode>(std::move(expr));
+    }
+
+    std::unique_ptr<ast::nodes::ImportNode> parseImport() {
+        match("import");
+        std::string name = tokens[pos++];
+        match(";");
+        return std::make_unique<ast::nodes::ImportNode>(std::move(name));
+    }
+
+    std::unique_ptr<ast::nodes::ExportNode> parseExport() {
+        match("export");
+
+        std::vector<std::string> params;
+        while (!match(";")) {
+            std::string param;
+            while (pos < tokens.size() && tokens[pos] != "," && tokens[pos] != ";") {
+                param += tokens[pos++] + " ";
+            }
+            if (!param.empty() && param.back() == ' ') {
+                param.pop_back();
+            }
+            if (!param.empty()) {
+                params.push_back(param);
+            }
+            match(",");
+        }
+
+        return std::make_unique<ast::nodes::ExportNode>(params);
     }
 };

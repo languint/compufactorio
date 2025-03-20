@@ -74,6 +74,11 @@ namespace sfml {
         return "invalid";
     }
 
+    inline std::string getFolderForFileType(const std::string& file) {
+        if (file == "/") return "/";
+        return "invalid";
+    }
+
     inline void clearDirectory(const std::filesystem::path &path) {
         if (!exists(path)) return;
 
