@@ -56,33 +56,6 @@ private:
     }
 
     std::unique_ptr<ast::nodes::ASTNode> parseStatement() {
-        if (pos < tokens.size() && !tokens[pos].empty() && tokens[pos][0] == '#') {
-            std::vector<std::string> fileTypeTokens;
-
-            while (pos < tokens.size() && tokens[pos][0] == '#') {
-                std::string line = tokens[pos].substr(1);
-                std::istringstream iss(line);
-                std::string fileType;
-
-                while (iss >> fileType) {
-                    fileTypeTokens.push_back(fileType);
-                }
-
-                pos++;
-            }
-            for (const auto &type: fileTypeTokens) {
-                std::cout << "FileType: " << type << std::endl;
-            }
-
-            std::vector<types::FileType> types;
-
-            for (const auto &type: fileTypeTokens) {
-                types.push_back(types::stringToFileType(type));
-            }
-
-            return std::make_unique<ast::nodes::FileTypeNode>(types);
-        }
-
         if (match("const")) {
             return parseVariable(true);
         }
@@ -101,7 +74,29 @@ private:
         if (match("export")) {
             return parseExport();
         }
+        if (pos < tokens.size() && !tokens[pos].empty() && tokens[pos][0] == '#') {
+            std::vector<std::string> fileTypeTokens;
 
+            while (pos < tokens.size() && tokens[pos][0] == '#') {
+                std::string line = tokens[pos].substr(1);
+                std::istringstream iss(line);
+                std::string fileType;
+
+                while (iss >> fileType) {
+                    fileTypeTokens.push_back(fileType);
+                }
+
+                pos++;
+            }
+
+            std::vector<types::FileType> types;
+
+            for (const auto &type: fileTypeTokens) {
+                types.push_back(types::stringToFileType(type));
+            }
+
+            return std::make_unique<ast::nodes::FileTypeNode>(types);
+        }
         if (pos < tokens.size() && pos + 1 < tokens.size() && tokens[pos + 1] == "(") {
             const std::string functionName = tokens[pos++];
             return parseFunctionCall(functionName);
@@ -266,10 +261,11 @@ private:
     }
 
     std::unique_ptr<ast::nodes::ImportNode> parseImport() {
-        match("import");
-        std::string name = tokens[pos++];
+        match("<");
+        std::string moduleName = tokens[pos++];
+        match(">");
         match(";");
-        return std::make_unique<ast::nodes::ImportNode>(std::move(name));
+        return std::make_unique<ast::nodes::ImportNode>(std::move(moduleName));
     }
 
     std::unique_ptr<ast::nodes::ExportNode> parseExport() {

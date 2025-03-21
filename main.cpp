@@ -99,8 +99,7 @@ int main(const int argc, char *argv[]) {
                 continue;
             }
 
-            const std::string subDirectory = sfml::getFolderForFileType(
-                fileType.empty() ? "/" : fileTypeToString(fileType[0]));
+            const std::string subDirectory = sfml::getFolderForFileType(fileType[0]);
 
             sfml::createDirectory(currentExecutingPath / outputDir / subDirectory);
             const std::filesystem::path outputPath = transpiler::getLuaFilePath(
